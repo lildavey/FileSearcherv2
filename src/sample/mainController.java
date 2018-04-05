@@ -29,6 +29,13 @@ public class mainController {
     @FXML private Button directoryChooser;
     @FXML private Stage stage;
 
+    /**
+     *
+     * @param event
+     * @throws IOException
+     * allows user to pick a folder
+     * outputs folder directory path onto directorySearch
+     */
     @FXML
     public void DirectorySearchAction(ActionEvent event) throws IOException
     {
