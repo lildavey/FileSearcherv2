@@ -39,6 +39,7 @@ public class mainController implements Initializable{
     @FXML private ChoiceBox searchType;
     @FXML private Button directoryChooser, searchBtn;
     @FXML private Stage stage;
+    @FXML private Label filesSearched, resultsFound;
 
 
 
@@ -78,12 +79,14 @@ public class mainController implements Initializable{
 
     public void searchBtnAction() throws Exception
     {
+        fileList.getItems().clear();
         List<File> filesInFolder = Files.walk(Paths.get(directorySearch.getText()))
                 .filter(Files::isRegularFile)
                 .map(Path::toFile)
                 .collect(Collectors.toList());
-
         ObservableList<File> list = FXCollections.observableArrayList(filesInFolder);
+
+        filesSearched.setText("Files Searched: "+list.size());
         for (File temp:list)
         {
             if(searchType.getValue().equals("Contains"))
@@ -93,6 +96,7 @@ public class mainController implements Initializable{
                 if((temp.getName().equals(search.getText())))fileList.getItems().add(temp);
 
         }
+        resultsFound.setText("Results Found: "+fileList.getItems().size());
     }
 
 }

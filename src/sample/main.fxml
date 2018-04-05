@@ -25,5 +25,7 @@
       <TextField fx:id="search" maxWidth="200.0" prefWidth="200.0" promptText="search" translateX="-200.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
       <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchBtnAction" text="Search" translateX="150.0" GridPane.rowIndex="2" />
       <ChoiceBox fx:id="searchType" prefHeight="25.0" prefWidth="100.0" GridPane.rowIndex="2" />
+      <Label fx:id="filesSearched" contentDisplay="CENTER" prefHeight="25.0" prefWidth="150.0" text="Files Searched: " textAlignment="CENTER" GridPane.valignment="TOP" />
+      <Label fx:id="resultsFound" prefHeight="25.0" prefWidth="150.0" text="Results Found: " translateY="25.0" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
    </children>
 </GridPane>

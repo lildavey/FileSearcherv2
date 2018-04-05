@@ -14,7 +14,8 @@ public class Runner extends Application {
         Parent root = (Parent)loader.load();
         mainController controller = (mainController) loader.getController();
         controller.setStage(primaryStage);
-        primaryStage.setTitle("Hello World");
+
+        primaryStage.setTitle("File Search");
         primaryStage.setScene(new Scene(root, 600, 400));
         primaryStage.show();
     }
