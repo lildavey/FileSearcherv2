@@ -89,8 +89,10 @@ public class mainController implements Initializable{
             if(searchType.getValue().equals("Contains"))
             if((temp.getName().contains(search.getText())))fileList.getItems().add(temp);
 
+            if(searchType.getValue().equals("Match"))
+                if((temp.getName().equals(search.getText())))fileList.getItems().add(temp);
+
         }
-        //fileList.setItems(list);
     }
 
 }
