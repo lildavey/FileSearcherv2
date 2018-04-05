@@ -5,22 +5,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,14 +32,22 @@ import java.util.stream.Stream;
  * status bar
  * search text files
  */
-public class mainController {
+public class mainController implements Initializable{
     @FXML private GridPane root;
     @FXML private TextField directorySearch, search;
     @FXML private ListView fileList;
-    @FXML private MenuButton searchType;
+    @FXML private ChoiceBox searchType;
     @FXML private Button directoryChooser, searchBtn;
     @FXML private Stage stage;
-    private Stream<Path> fileArray;
+
+
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources)
+    {
+        searchType.getItems().addAll("Match","Contains");
+
+    }
 
     /**
      *
@@ -76,10 +84,13 @@ public class mainController {
                 .collect(Collectors.toList());
 
         ObservableList<File> list = FXCollections.observableArrayList(filesInFolder);
-        fileList.setItems(list);
+        for (File temp:list)
+        {
+            if(searchType.getValue().equals("Contains"))
+            if((temp.getName().contains(search.getText())))fileList.getItems().add(temp);
+
+        }
+        //fileList.setItems(list);
     }
-
-
-
 
 }

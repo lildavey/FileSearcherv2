@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
@@ -18,15 +19,11 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Button fx:id="directoryChooser" mnemonicParsing="false" onAction="#DirectorySearchAction" text="Button" translateX="100.0" GridPane.rowIndex="2" />
-      <ListView prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+      <Button fx:id="directoryChooser" mnemonicParsing="false" onAction="#DirectorySearchAction" text="Choose Directory" translateX="100.0" GridPane.rowIndex="2" />
+      <ListView fx:id="fileList" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
       <TextField fx:id="directorySearch" maxWidth="200.0" prefWidth="200.0" promptText="directorySearch" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
       <TextField fx:id="search" maxWidth="200.0" prefWidth="200.0" promptText="search" translateX="-200.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-      <MenuButton fx:id="searchType" mnemonicParsing="false" text="MenuButton" GridPane.rowIndex="2">
-        <items>
-          <MenuItem mnemonicParsing="false" text="Action 1" />
-          <MenuItem mnemonicParsing="false" text="Action 2" />
-        </items>
-      </MenuButton>
+      <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchBtnAction" text="Search" translateX="150.0" GridPane.rowIndex="2" />
+      <ChoiceBox fx:id="searchType" prefHeight="25.0" prefWidth="100.0" GridPane.rowIndex="2" />
    </children>
 </GridPane>
