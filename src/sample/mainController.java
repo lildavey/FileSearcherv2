@@ -14,6 +14,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -139,6 +140,46 @@ public class mainController implements Initializable{
 
             if(m.find())returnList.add(temp);
 
+        }
+        return FXCollections.observableArrayList(returnList);
+    }
+
+    /**
+     *
+     * @param list
+     * @return list containing all text files that contain the search term
+     * @throws FileNotFoundException
+     */
+    public ObservableList<File> fileContainsSearch(ObservableList<File> list) throws FileNotFoundException
+    {
+        List<File> returnList = new ArrayList<File>();
+        Scanner scan;
+
+        for (File temp: list) {
+            scan = new Scanner(temp);
+            while (scan.hasNext()) {
+                String line = scan.nextLine().toLowerCase().toString();
+                if (line.contains(search.getText())) {
+                    returnList.add(temp);
+                }
+            }
+        }
+        return FXCollections.observableArrayList(returnList);
+
+    }
+
+    public ObservableList<File> fileMatchSearch(ObservableList<File> list) throws FileNotFoundException
+    {
+        List<File> returnList = new ArrayList<File>();
+        Scanner scan;
+
+        for (File temp: list) {
+            String fileText = "";
+            scan = new Scanner(temp);
+            while (scan.hasNext()) {
+                fileText = fileText + scan.nextLine().toLowerCase().toString();
+            }
+            if(fileText.equals(search.getText()))returnList.add(temp);
         }
         return FXCollections.observableArrayList(returnList);
     }
