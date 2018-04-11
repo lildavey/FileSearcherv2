@@ -1,26 +1,37 @@
 package sample;
 
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -39,9 +50,11 @@ public class mainController implements Initializable{
     @FXML private TextField directorySearch, search;
     @FXML private ListView fileList;
     @FXML private ComboBox<String> searchType;
-    @FXML private Button directoryChooser, searchBtn;
+    @FXML private Button directoryChooser, searchBtn, save;
     @FXML private Stage stage;
-    @FXML private Label filesSearched, resultsFound;
+    @FXML private Label filesSearched, resultsFound, directory;
+    @FXML private CheckBox textSearch;
+    private Desktop desktop = Desktop.getDesktop();
 
 
 
@@ -49,7 +62,13 @@ public class mainController implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources)
     {
+        Desktop desktop = Desktop.getDesktop();
+
         searchType.getItems().addAll("Match","Contains", "Best Match", "Regular Expression");
+
+
+
+
 
 
     }
@@ -72,6 +91,7 @@ public class mainController implements Initializable{
             directorySearch.setText("No Directory selected");
         }else{
             directorySearch.setText(selectedDirectory.getAbsolutePath());
+            stage.setTitle("File Search - " +selectedDirectory.getAbsolutePath());
         }
 
 
@@ -93,13 +113,28 @@ public class mainController implements Initializable{
         filesSearched.setText("Files Searched: "+list.size());
         for (File temp:list)
         {
-            if(searchType.getValue().equals("Contains") && (temp.getName().contains(search.getText()))) fileList.getItems().add(temp);
+            if(!textSearch.isSelected()) {
 
-            if(searchType.getValue().equals("Match") && (temp.getName().equals(search.getText())))  fileList.getItems().add(temp);
+                if (searchType.getValue().equals("Contains") && (temp.getName().contains(search.getText()))) fileList.getItems().add(temp);
 
-            if(searchType.getValue().equals("Best Match"))fileList.setItems(fuzzySearch(list));
+                if (searchType.getValue().equals("Match") && (temp.getName().equals(search.getText()))) fileList.getItems().add(temp);
 
-            if(searchType.getValue().equals("Regular Expression"))fileList.setItems(regexSearch(list));
+                if (searchType.getValue().equals("Best Match")) fileList.setItems(fuzzySearch(list));
+
+                if (searchType.getValue().equals("Regular Expression")) fileList.setItems(regexSearch(list));
+            }
+            else
+            {
+
+                if (searchType.getValue().equals("Contains")) fileList.setItems(fileContainsSearch(list));
+
+                if (searchType.getValue().equals("Match")) fileList.setItems(fileMatchSearch(list));
+
+                //if (searchType.getValue().equals("Best Match")) fileList.setItems(fuzzySearch(list));
+
+                if (searchType.getValue().equals("Regular Expression")) fileList.setItems(fileRegexSearch(list));
+
+            }
 
         }
         resultsFound.setText("Results Found: "+fileList.getItems().size());
@@ -136,9 +171,7 @@ public class mainController implements Initializable{
         Matcher m;
         for (File temp: list)
         {
-            m = pattern.matcher(temp.getName());
 
-            if(m.find())returnList.add(temp);
 
         }
         return FXCollections.observableArrayList(returnList);
@@ -184,6 +217,26 @@ public class mainController implements Initializable{
         return FXCollections.observableArrayList(returnList);
     }
 
+    public ObservableList<File> fileRegexSearch(ObservableList<File> list) throws FileNotFoundException
+    {
+        List<File> returnList = new ArrayList<File>();
+        Scanner scan;
+
+        Pattern pattern = Pattern.compile(search.getText());
+        Matcher m;
+
+        for (File temp: list) {
+            String fileText = "";
+            scan = new Scanner(temp);
+            m = pattern.matcher(temp.getName());
+            while (scan.hasNext()) {
+                fileText = fileText + scan.nextLine().toLowerCase();
+            }
+            if(m.find())returnList.add(temp);
+        }
+        return FXCollections.observableArrayList(returnList);
+    }
+
     /**
      *
      * @param a
@@ -192,7 +245,8 @@ public class mainController implements Initializable{
      * used in fuzzSearch
      *
      */
-    public static int distance(String a, String b) {
+    public static int distance(String a, String b)
+    {
         a = a.toLowerCase();
         b = b.toLowerCase();
         // i == 0
@@ -211,6 +265,55 @@ public class mainController implements Initializable{
         }
         return costs[b.length()];
     }
+
+    public void openFile(MouseEvent click) {
+
+        if (click.getClickCount() == 2) {
+
+            File currentItemSelected = (File) fileList.getSelectionModel().getSelectedItem();
+            try {
+                if (currentItemSelected.exists())
+                    desktop.open(currentItemSelected);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public void saveFile() throws IOException
+    {
+        Dialog dialog = new TextInputDialog();
+
+        dialog.setTitle("Save List");
+
+        Button okButton = (Button) dialog.getDialogPane().lookupButton( ButtonType.OK );
+        okButton.setText("Save");
+
+        dialog.setHeaderText("Save file as:");
+
+
+        Optional<String> result = dialog.showAndWait();
+
+
+        String entered = "";
+
+
+        if (result.isPresent()) {
+            entered = result.get();
+
+        }
+        if(!entered.equals("")) {
+            PrintWriter writer = new PrintWriter(entered + ".txt", "UTF-8");
+            for (Object temp : fileList.getItems()) {
+                writer.println(temp);
+            }
+            writer.close();
+        }
+    }
+
 
 
 }
