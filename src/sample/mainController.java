@@ -12,8 +12,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.*;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.*;
+
+
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -54,6 +56,7 @@ public class mainController implements Initializable{
     @FXML private Stage stage;
     @FXML private Label filesSearched, resultsFound, directory;
     @FXML private CheckBox textSearch;
+
     private Desktop desktop = Desktop.getDesktop();
 
 
@@ -65,7 +68,7 @@ public class mainController implements Initializable{
         Desktop desktop = Desktop.getDesktop();
 
         searchType.getItems().addAll("Match","Contains", "Best Match", "Regular Expression");
-
+        searchType.setValue("Best Match");
 
 
 
@@ -171,6 +174,8 @@ public class mainController implements Initializable{
         Matcher m;
         for (File temp: list)
         {
+            m = pattern.matcher(temp.getName());
+            if(m.find())returnList.add(temp);
 
 
         }
@@ -237,6 +242,48 @@ public class mainController implements Initializable{
         return FXCollections.observableArrayList(returnList);
     }
 
+    public ObservableList<File> fileFuzzySearch(ObservableList<File> list) throws FileNotFoundException
+    {
+        List<File> returnList = new ArrayList<File>();
+        Map<Integer, File> fuzzyList = new TreeMap<Integer, File>();
+
+        //Map<Integer, File> fuzzyFileList = new TreeMap<Integer, File>();
+
+        Scanner scan;
+        for (File temp: list)
+        {
+            scan = new Scanner(temp);
+            String[] tempList;
+
+            String fileText = "";
+            int tempNum;
+
+                //puts all text from file into list
+            while (scan.hasNext()) {
+                    fileText = fileText + scan.nextLine().toLowerCase();
+            }
+            tempList = fileText.split(" ");
+
+            tempNum = distance(search.getText(),tempList[0]);
+            //finds smallest distance
+            for(String tempString: tempList)
+            {
+                if(distance(search.getText(),tempString)<tempNum)tempNum = distance(search.getText(),tempString);
+            }
+            //adds file corresponding to its lowest distance
+            fuzzyList.put( tempNum, temp);
+        }
+
+
+        if(returnList.size()<25)
+            for (Map.Entry<Integer, File> temp:fuzzyList.entrySet())
+            {
+                returnList.add(temp.getValue());
+            }
+        return FXCollections.observableArrayList(returnList);
+
+    }
+
     /**
      *
      * @param a
@@ -285,6 +332,7 @@ public class mainController implements Initializable{
 
     public void saveFile() throws IOException
     {
+
         Dialog dialog = new TextInputDialog();
 
         dialog.setTitle("Save List");

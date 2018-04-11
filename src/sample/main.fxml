@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.mainController">
+<GridPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.mainController">
   <children>
     <Button fx:id="directoryChooser" mnemonicParsing="false" onAction="#DirectorySearchAction" prefWidth="50.0" text="Choose Directory" translateX="100.0" GridPane.rowIndex="2" />
     <ListView fx:id="fileList" onMouseClicked="#openFile" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
