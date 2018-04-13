@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact name="FileSearcherv2:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/FileSearcherv2_jar</output-path>
+    <root id="root">
+      <element id="archive" name="FileSearcherv2.jar">
+        <element id="module-output" name="FileSearcherv2" />
+      </element>
+      <element id="library" level="project" name="controlsfx-8.40.14" />
+    </root>
+  </artifact>
+</component>

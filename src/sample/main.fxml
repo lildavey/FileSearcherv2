@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.*?>
 
-<GridPane fx:id="root" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.mainController">
+<GridPane fx:id="root" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.mainController">
   <children>
     <Button fx:id="directoryChooser" mnemonicParsing="false" onAction="#DirectorySearchAction" prefHeight="30.0" prefWidth="125.0" text="Choose Directory" translateX="75.0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
       <GridPane.margin>
@@ -34,12 +34,15 @@
       </GridPane.margin>
     </TextField>
     <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchBtnAction" prefHeight="30.0" prefWidth="125.0" text="Search" translateX="75.0" GridPane.halignment="CENTER" GridPane.margin="$x1" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS" />
-    <Label fx:id="filesSearched" contentDisplay="CENTER" prefHeight="25.0" prefWidth="150.0" text="Files Searched: " textAlignment="CENTER" translateY="0.0" GridPane.halignment="LEFT" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+    <Label fx:id="filesSearched" prefHeight="25.0" prefWidth="150.0" text="Files Searched: " translateY="0.0" GridPane.halignment="LEFT" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
       <GridPane.margin>
         <Insets bottom="2.0" top="-2.0" />
       </GridPane.margin>
     </Label>
-    <Label fx:id="resultsFound" prefHeight="25.0" prefWidth="150.0" text="Results Found: " translateX="0.0" translateY="0.0" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+    <Label fx:id="resultsFound" prefHeight="25.0" prefWidth="150.0" text="Results Found: " translateX="0.0" translateY="0.0" GridPane.halignment="LEFT" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+         <GridPane.margin>
+            <Insets top="-2.0" />
+         </GridPane.margin></Label>
     <ComboBox fx:id="searchType" prefHeight="20.0" prefWidth="150.0" promptText="Search Type" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
       <GridPane.margin>
         <Insets top="8.0" />

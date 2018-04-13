@@ -87,16 +87,18 @@ public class mainController implements Initializable{
     @FXML
     public void DirectorySearchAction(ActionEvent event) throws IOException
     {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File("src"));
-        File selectedDirectory = directoryChooser.showDialog(stage);
+        DirectoryChooser directoryChooser1 = new DirectoryChooser();
+        directoryChooser1.setInitialDirectory(new File("src"));
+        File selectedDirectory = directoryChooser1.showDialog(stage);
 
         if(selectedDirectory == null){
             directorySearch.setText("");
         }else{
             directorySearch.setText(selectedDirectory.getAbsolutePath());
+
             stage.setTitle("File Search - " +selectedDirectory.getAbsolutePath());
         }
+
 
 
     }
@@ -108,7 +110,7 @@ public class mainController implements Initializable{
     public void searchBtnAction() throws Exception
     {
         Search search1 = new Search(directorySearch,search,fileList,searchType,filesSearched,resultsFound,textSearch, progress, currentFile);
-        search1.run();
+        search1.start();
     }
 
     /**
@@ -294,6 +296,9 @@ public class mainController implements Initializable{
             catch (IOException e)
             {
                 e.printStackTrace();
+                Alert error = new Alert(Alert.AlertType.ERROR);
+                error.setContentText(e.toString());
+                error.showAndWait();
             }
 
         }
@@ -424,7 +429,8 @@ class Search extends Thread {
                             System.out.println("numFilesSearched = " + numFilesSearched);
                             System.out.println("list = " + list.size());
                             //System.out.println("progress = " + progress.getProgress());
-                            resultsFound.setText("Results Found: " + numResultsFound++);
+
+                            resultsFound.setText("Results Found: " + fileList.getItems().size());
                             filesSearched.setText("Files Searched: "+numFilesSearched++);
                             progress.setProgress((numFilesSearched/list.size()));
                             currentFile.setText(currFileText);
