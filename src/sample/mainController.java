@@ -1,6 +1,7 @@
 package sample;
 
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -49,13 +50,18 @@ import java.util.stream.Stream;
  */
 public class mainController implements Initializable{
     @FXML private GridPane root;
+
     @FXML private TextField directorySearch, search;
     @FXML private ListView fileList;
     @FXML private ComboBox<String> searchType;
+    @FXML private Label filesSearched, resultsFound, directory, currentFile;
+    @FXML private CheckBox textSearch;
+
     @FXML private Button directoryChooser, searchBtn, save;
     @FXML private Stage stage;
-    @FXML private Label filesSearched, resultsFound, directory;
-    @FXML private CheckBox textSearch;
+    @FXML private ProgressBar progress;
+
+
 
     private Desktop desktop = Desktop.getDesktop();
 
@@ -69,11 +75,6 @@ public class mainController implements Initializable{
 
         searchType.getItems().addAll("Match","Contains", "Best Match", "Regular Expression");
         searchType.setValue("Best Match");
-
-
-
-
-
     }
 
     /**
@@ -91,7 +92,7 @@ public class mainController implements Initializable{
         File selectedDirectory = directoryChooser.showDialog(stage);
 
         if(selectedDirectory == null){
-            directorySearch.setText("No Directory selected");
+            directorySearch.setText("");
         }else{
             directorySearch.setText(selectedDirectory.getAbsolutePath());
             stage.setTitle("File Search - " +selectedDirectory.getAbsolutePath());
@@ -106,41 +107,8 @@ public class mainController implements Initializable{
 
     public void searchBtnAction() throws Exception
     {
-        fileList.getItems().clear();
-        List<File> filesInFolder = Files.walk(Paths.get(directorySearch.getText()))
-                .filter(Files::isRegularFile)
-                .map(Path::toFile)
-                .collect(Collectors.toList());
-        ObservableList<File> list = FXCollections.observableArrayList(filesInFolder);
-
-        filesSearched.setText("Files Searched: "+list.size());
-        for (File temp:list)
-        {
-            if(!textSearch.isSelected()) {
-
-                if (searchType.getValue().equals("Contains") && (temp.getName().contains(search.getText()))) fileList.getItems().add(temp);
-
-                if (searchType.getValue().equals("Match") && (temp.getName().equals(search.getText()))) fileList.getItems().add(temp);
-
-                if (searchType.getValue().equals("Best Match")) fileList.setItems(fuzzySearch(list));
-
-                if (searchType.getValue().equals("Regular Expression")) fileList.setItems(regexSearch(list));
-            }
-            else
-            {
-
-                if (searchType.getValue().equals("Contains")) fileList.setItems(fileContainsSearch(list));
-
-                if (searchType.getValue().equals("Match")) fileList.setItems(fileMatchSearch(list));
-
-                //if (searchType.getValue().equals("Best Match")) fileList.setItems(fuzzySearch(list));
-
-                if (searchType.getValue().equals("Regular Expression")) fileList.setItems(fileRegexSearch(list));
-
-            }
-
-        }
-        resultsFound.setText("Results Found: "+fileList.getItems().size());
+        Search search1 = new Search(directorySearch,search,fileList,searchType,filesSearched,resultsFound,textSearch, progress, currentFile);
+        search1.run();
     }
 
     /**
@@ -149,13 +117,13 @@ public class mainController implements Initializable{
      * @return sorted list by Levenshtein distance
      *
      */
-    public ObservableList<File> fuzzySearch(ObservableList<File> list)
+    public static ObservableList<File> fuzzySearch(ObservableList<File> list, String searchTerm) throws FileNotFoundException
     {
         List<File> returnList = new ArrayList<File>();
         Map<Integer, File> fuzzyList = new TreeMap<Integer, File>();
         for (File temp: list)
         {
-            fuzzyList.put( distance(search.getText(),temp.getName()), temp);
+            fuzzyList.put( distance(searchTerm,temp.getName()), temp);
         }
         if(returnList.size()<25)
         for (Map.Entry<Integer, File> temp:fuzzyList.entrySet())
@@ -167,9 +135,9 @@ public class mainController implements Initializable{
 
     }
 
-    public ObservableList<File> regexSearch(ObservableList<File> list)
+    public static ObservableList<File> regexSearch(ObservableList<File> list, String searchTerm) throws FileNotFoundException
     {
-        Pattern pattern = Pattern.compile(search.getText());
+        Pattern pattern = Pattern.compile(searchTerm);
         List<File> returnList = new ArrayList<File>();
         Matcher m;
         for (File temp: list)
@@ -188,7 +156,7 @@ public class mainController implements Initializable{
      * @return list containing all text files that contain the search term
      * @throws FileNotFoundException
      */
-    public ObservableList<File> fileContainsSearch(ObservableList<File> list) throws FileNotFoundException
+    public static ObservableList<File> fileContainsSearch(ObservableList<File> list, String searchTerm) throws FileNotFoundException
     {
         List<File> returnList = new ArrayList<File>();
         Scanner scan;
@@ -197,7 +165,7 @@ public class mainController implements Initializable{
             scan = new Scanner(temp);
             while (scan.hasNext()) {
                 String line = scan.nextLine().toLowerCase().toString();
-                if (line.contains(search.getText())) {
+                if (line.contains(searchTerm)) {
                     returnList.add(temp);
                 }
             }
@@ -206,7 +174,7 @@ public class mainController implements Initializable{
 
     }
 
-    public ObservableList<File> fileMatchSearch(ObservableList<File> list) throws FileNotFoundException
+    public static ObservableList<File> fileMatchSearch(ObservableList<File> list, String searchTerm) throws FileNotFoundException
     {
         List<File> returnList = new ArrayList<File>();
         Scanner scan;
@@ -217,17 +185,17 @@ public class mainController implements Initializable{
             while (scan.hasNext()) {
                 fileText = fileText + scan.nextLine().toLowerCase().toString();
             }
-            if(fileText.equals(search.getText()))returnList.add(temp);
+            if(fileText.equals(searchTerm))returnList.add(temp);
         }
         return FXCollections.observableArrayList(returnList);
     }
 
-    public ObservableList<File> fileRegexSearch(ObservableList<File> list) throws FileNotFoundException
+    public static ObservableList<File> fileRegexSearch(ObservableList<File> list, String searchTerm) throws FileNotFoundException
     {
         List<File> returnList = new ArrayList<File>();
         Scanner scan;
 
-        Pattern pattern = Pattern.compile(search.getText());
+        Pattern pattern = Pattern.compile(searchTerm);
         Matcher m;
 
         for (File temp: list) {
@@ -242,8 +210,9 @@ public class mainController implements Initializable{
         return FXCollections.observableArrayList(returnList);
     }
 
-    public ObservableList<File> fileFuzzySearch(ObservableList<File> list) throws FileNotFoundException
+    public static ObservableList<File> fileFuzzySearch(ObservableList<File> list, String searchTerm) throws FileNotFoundException
     {
+
         List<File> returnList = new ArrayList<File>();
         Map<Integer, File> fuzzyList = new TreeMap<Integer, File>();
 
@@ -264,11 +233,11 @@ public class mainController implements Initializable{
             }
             tempList = fileText.split(" ");
 
-            tempNum = distance(search.getText(),tempList[0]);
+            tempNum = distance(searchTerm,tempList[0]);
             //finds smallest distance
             for(String tempString: tempList)
             {
-                if(distance(search.getText(),tempString)<tempNum)tempNum = distance(search.getText(),tempString);
+                if(distance(searchTerm,tempString)<tempNum)tempNum = distance(searchTerm,tempString);
             }
             //adds file corresponding to its lowest distance
             fuzzyList.put( tempNum, temp);
@@ -361,7 +330,116 @@ public class mainController implements Initializable{
             writer.close();
         }
     }
+}
+
+class Search extends Thread {
+
+    @FXML private TextField directorySearch, search;
+    @FXML private ListView fileList;
+    @FXML private ComboBox<String> searchType;
+    @FXML private Label filesSearched, resultsFound, currentFile;
+    @FXML private CheckBox textSearch;
+    @FXML private ProgressBar progress;
+    private int numResultsFound, numFilesSearched = 0;
+    private String currFileText="";
 
 
+    /**
+     *
+     * @param directorySearch
+     * @param search
+     * @param fileList
+     * @param searchType
+     * @param filesSearched
+     * @param resultsFound
+     * @param textSearch
+     */
+    public Search(TextField directorySearch, TextField search, ListView fileList, ComboBox<String> searchType, Label filesSearched, Label resultsFound, CheckBox textSearch, ProgressBar progress, Label currentFile) {
+        this.directorySearch = directorySearch;
+        this.search = search;
+        this.fileList = fileList;
+        this.searchType =searchType;
+        this.filesSearched = filesSearched;
+        this.resultsFound = resultsFound;
+        this.textSearch = textSearch;
+        this.progress = progress;
+        this.currentFile = currentFile;
+    }
 
+    public void run()
+    {
+        fileList.getItems().clear();
+        List<File> filesInFolder = null;
+        try {
+            filesInFolder = Files.walk(Paths.get(directorySearch.getText()))
+                    .filter(Files::isRegularFile)
+                    .map(Path::toFile)
+                    .collect(Collectors.toList());
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        ObservableList<File> list = FXCollections.observableArrayList(filesInFolder);
+
+
+        try {
+            for (File temp : list) {
+                if (!textSearch.isSelected()) {
+
+                    if (searchType.getValue().equals("Contains") && (temp.getName().contains(search.getText())))
+                        fileList.getItems().add(temp);
+
+                    if (searchType.getValue().equals("Match") && (temp.getName().equals(search.getText())))
+                        fileList.getItems().add(temp);
+
+                    if (searchType.getValue().equals("Best Match"))
+                        fileList.setItems(mainController.fuzzySearch(list, search.getText()));
+
+                    if (searchType.getValue().equals("Regular Expression"))
+                        fileList.setItems(mainController.regexSearch(list, search.getText()));
+                } else {
+
+                    if (searchType.getValue().equals("Contains"))
+                        fileList.setItems(mainController.fileContainsSearch(list, search.getText()));
+
+                    if (searchType.getValue().equals("Match"))
+                        fileList.setItems(mainController.fileMatchSearch(list, search.getText()));
+
+                    if (searchType.getValue().equals("Best Match"))
+                        fileList.setItems(mainController.fileFuzzySearch(list, search.getText()));
+
+                    if (searchType.getValue().equals("Regular Expression"))
+                        fileList.setItems(mainController.fileRegexSearch(list, search.getText()));
+
+                }
+
+                currFileText = temp.getAbsolutePath();
+
+
+                Platform.runLater(
+                        () -> {
+
+                            System.out.println("numFilesSearched = " + numFilesSearched);
+                            System.out.println("list = " + list.size());
+                            //System.out.println("progress = " + progress.getProgress());
+                            resultsFound.setText("Results Found: " + numResultsFound++);
+                            filesSearched.setText("Files Searched: "+numFilesSearched++);
+                            progress.setProgress((numFilesSearched/list.size()));
+                            currentFile.setText(currFileText);
+
+                        });
+
+            }
+
+
+        }
+        catch(FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+
+    }
 }

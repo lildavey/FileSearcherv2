@@ -1,35 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.*?>
 
-<GridPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.mainController">
+<GridPane fx:id="root" disable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.mainController">
   <children>
-    <Button fx:id="directoryChooser" mnemonicParsing="false" onAction="#DirectorySearchAction" prefWidth="50.0" text="Choose Directory" translateX="100.0" GridPane.rowIndex="2" />
-    <ListView fx:id="fileList" onMouseClicked="#openFile" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
-    <TextField fx:id="directorySearch" maxWidth="175.0" prefWidth="175.0" promptText="directorySearch" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-    <TextField fx:id="search" maxWidth="175.0" prefWidth="175.0" promptText="search" translateX="-175.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-    <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchBtnAction" prefWidth="50.0" text="Search" translateX="150.0" GridPane.rowIndex="2" />
-    <Label fx:id="filesSearched" contentDisplay="CENTER" prefHeight="25.0" prefWidth="150.0" text="Files Searched: " textAlignment="CENTER" GridPane.valignment="TOP" />
-    <Label fx:id="resultsFound" prefHeight="25.0" prefWidth="150.0" text="Results Found: " translateY="25.0" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
-    <ComboBox fx:id="searchType" prefWidth="100.0" promptText="Search Type" GridPane.rowIndex="2" />
+    <Button fx:id="directoryChooser" mnemonicParsing="false" onAction="#DirectorySearchAction" prefHeight="30.0" prefWidth="125.0" text="Choose Directory" translateX="75.0" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
+      <GridPane.margin>
+        <Insets bottom="8.0" top="8.0" fx:id="x1" />
+      </GridPane.margin>
+    </Button>
+    <ListView fx:id="fileList" onMouseClicked="#openFile" prefHeight="270.0" prefWidth="590.0" GridPane.rowIndex="1" />
+    <TextField fx:id="directorySearch" maxWidth="300.0" prefHeight="30.0" prefWidth="300.0" promptText="Directory Path" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
+      <GridPane.margin>
+        <Insets bottom="8.0" fx:id="x2" />
+      </GridPane.margin>
+    </TextField>
+    <TextField fx:id="search" maxWidth="-Infinity" prefHeight="30.0" prefWidth="300.0" promptText="Search" translateX="0.0" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+      <GridPane.margin>
+        <Insets bottom="10.0" top="8.0" />
+      </GridPane.margin>
+    </TextField>
+    <Button fx:id="searchBtn" mnemonicParsing="false" onAction="#searchBtnAction" prefHeight="30.0" prefWidth="125.0" text="Search" translateX="75.0" GridPane.halignment="CENTER" GridPane.margin="$x1" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS" />
+    <Label fx:id="filesSearched" contentDisplay="CENTER" prefHeight="25.0" prefWidth="150.0" text="Files Searched: " textAlignment="CENTER" translateY="0.0" GridPane.halignment="LEFT" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+      <GridPane.margin>
+        <Insets bottom="2.0" top="-2.0" />
+      </GridPane.margin>
+    </Label>
+    <Label fx:id="resultsFound" prefHeight="25.0" prefWidth="150.0" text="Results Found: " translateX="0.0" translateY="0.0" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+    <ComboBox fx:id="searchType" prefHeight="20.0" prefWidth="150.0" promptText="Search Type" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP" GridPane.vgrow="ALWAYS">
+      <GridPane.margin>
+        <Insets top="8.0" />
+      </GridPane.margin>
+    </ComboBox>
     <Label fx:id="directory" alignment="CENTER" text="" textAlignment="CENTER" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
-    <CheckBox fx:id="textSearch" mnemonicParsing="false" text="Search Text Files" translateY="-25.0" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-      <Button fx:id="save" mnemonicParsing="false" onAction="#saveFile" prefWidth="50.0" text="Save" translateX="200.0" GridPane.rowIndex="2" />
+    <CheckBox fx:id="textSearch" mnemonicParsing="false" prefHeight="-1.0" text="Search Text Files" translateX="-40.0" translateY="0.0" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.margin="$x1" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+    <Button fx:id="save" mnemonicParsing="false" onAction="#saveFile" prefHeight="20.0" prefWidth="150.0" text="Save" translateX="0.0" GridPane.halignment="RIGHT" GridPane.margin="$x2" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS" />
+    <ProgressBar fx:id="progress" prefHeight="15.0" prefWidth="600.0" progress="0.0" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0" GridPane.valignment="BOTTOM" />
+    <Label fx:id="currentFile" alignment="CENTER" contentDisplay="CENTER" prefHeight="15.0" text="" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.rowIndex="0" GridPane.valignment="BOTTOM">
+      <font>
+        <Font size="11.0" />
+      </font>
+    </Label>
   </children>
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
   </columnConstraints>
+  <padding>
+    <Insets left="5.0" right="5.0" />
+  </padding>
   <rowConstraints>
-    <RowConstraints maxHeight="129.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
-    <RowConstraints maxHeight="267.0" minHeight="10.0" prefHeight="267.0" vgrow="SOMETIMES" />
-    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="130.0" minHeight="0.0" prefHeight="0.0" vgrow="SOMETIMES" />
+    <RowConstraints fillHeight="true" maxHeight="250.0" minHeight="270.0" prefHeight="-1.0" vgrow="NEVER" />
+    <RowConstraints maxHeight="100.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
 </GridPane>

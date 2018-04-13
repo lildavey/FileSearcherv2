@@ -16,7 +16,7 @@ public class Runner extends Application {
         controller.setStage(primaryStage);
 
         primaryStage.setTitle("File Search");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        primaryStage.setScene(new Scene(root, 600, 410));
         primaryStage.show();
     }
 
